@@ -5,48 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>John Doe - CV</title>
     <style>
+        html {
+            scroll-padding-top: 4rem;
+        }
         body {
             font-family: Arial, sans-serif;
-            line-height: 1.6;
+            line-height: 1.4;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: hsl(192, 25%, 73%);
         }
         .container {
-            width: 80%;
+            width: 90%;
             margin: auto;
-            overflow: hidden;
         }
+
         header {
+            position: fixed;
             background: #333;
             color: #fff;
-            padding-top: 30px;
-            min-height: 70px;
-            border-bottom: #0779e4 3px solid;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+        header ul {
+            list-style-type: none;
+            overflow: hidden;
+            align-items: center;
         }
         header a {
             color: #fff;
             text-decoration: none;
             text-transform: uppercase;
-            font-size: 16px;
-        }
-        header ul {
-            padding: 0;
-            list-style: none;
+            font-size: 12px;
         }
         header li {
             display: inline;
-            padding: 0 20px 0 20px;
+            padding: 0 10px 0 10px;
+            float: left;
         }
+        header a:hover{
+            background-color: #0779e4;
+        }
+
         .showcase {
-            min-height: 400px;
+            min-height: 200px;
             background: #0779e4;
             color: #fff;
             text-align: center;
-            padding-top: 100px;
+            padding-top: 50px;
         }
         .showcase h1 {
-            font-size: 55px;
+            font-size: 40px;
         }
         .section {
             padding: 20px;
@@ -60,12 +70,18 @@
             padding: 10px;
             margin-top: 20px;
         }
+        li {
+            margin-bottom: 10px;
+        }
+        ul {
+            margin-bottom: 30px;
+        }
     </style>
 </head>
 <body>
+    <!--header-->
     <header>
         <div class="container">
-            <h1>John Doe</h1>
             <ul>
                 <li><a href="#about">About</a></li>
                 <li><a href="#education">Education</a></li>
@@ -77,35 +93,140 @@
             </ul>
         </div>
     </header>
+    <!--showcase-->
     <section class="showcase">
         <div class="container">
-            <h1>Welcome to My CV</h1>
-            <p>Your job title or objective goes here.</p>
+            <h1>Welcome to my page</h1>
+            <p>Senior Machine Learning Researcher.</p>
         </div>
     </section>
+    <!--main parts-->
     <div class="container">
+        <!--about-->
         <section id="about" class="section">
             <h2>About Me</h2>
-            <p>Senior Machine Learning Scientist with over 5 years of experience in delivering high-impact solutions in Machine Learning (ML), Deep Learning (DL), Reinforcement Learning (RL), and Large Language Models (LLMs). Proven expertise in architecting scalable ML models, optimizing pricing strategies, and enhancing customer segmentation. Adept at mentoring teams, collaborating on cross-functional projects, and deploying AI/ML models in production environments. Committed to advancing AI applications and driving organizational success.</p>
+            <p>Senior Machine Learning Scientist with over 5 years of experience in delivering
+                high-impact solutions in Machine Learning (ML), Deep Learning (DL),
+                Reinforcement Learning (RL), and Large Language Models (LLMs). Proven
+                expertise in architecting scalable ML models, optimizing pricing strategies,
+                and enhancing customer segmentation. Adept at mentoring teams, collaborating
+                on cross-functional projects, and deploying AI/ML models in production
+                environments. Committed to advancing AI applications and driving organizational
+                success.</p>
         </section>
+        <!--experience-->
         <section id="experience" class="section">
             <h2>Experience</h2>
-            <p><strong>Job Title</strong> - Company Name</p>
-            <p>(Year - Year)</p>
+            <p><b>Senior Machine Learning Scientist, Beyond:</b> 2023 - Present</p>
             <ul>
-                <li>Responsibility or achievement 1</li>
-                <li>Responsibility or achievement 2</li>
-                <li>Responsibility or achievement 3</li>
+                <li>
+                    <b>Sponsored Ads Products Optimization (SPA)</b>
+                    <br>
+                    Developed and deployed advanced Click-Through Rate (CTR) and
+                    Conversion Rate (CVR) models using XGBoost. Optimized the SPA ranking
+                    algorithm and increased ad click predictions by 15% and conversion rates
+                    by 5%, boosting sponsored ad revenue by $5 million annually.
+                </li>
+                <li>
+                    <b>Machine Learning Coupon Personalization (MLCP)</b>
+                    <br>
+                    Led cross-functional projects to develop personalized email coupon
+                    algorithm using causal ML models. Scaled the model to serve 40 million
+                    customers, resulting in a 3.6% increase in revenue and a 15%
+                    increase in profit, confirmed by A/B testing on 20 million customers.
+                </li>
+                <li>
+                    <b>Dynamic ML Pricing Optimization (MLPO)</b>
+                    <br>
+                    Directed the development of a pricing optimization algorithm
+                    processing over 2 million SKUs. Oversaw the creation of a predictive
+                    model and a parallel-based optimization method processing over 2
+                    million SKUs, leading to improvements in key financial metrics, including
+                    a $13.5 M revenue increase.
+                </li>
+                <li>
+                    <b>Team Mentoring and Hiring</b>
+                    <br>
+                    Participated in the hiring process, interviewing and onboarding new data
+                    science team members. Mentored an intern in developing Bayesian models for
+                    A/B testing targeting skewed revenue-based KPIs, resulting in a 20% to 40%
+                    reduction in sample size requirements and significant experiment cost savings.
+                </li>
+            </ul>
+            <p><b>Machine Learning Scientist, Overstock.com:</b> 2020 - 2023</p>
+            <ul>
+                <li>
+                    <b>Automated Site Sale Optimization</b>
+                    <br>
+                    Developed and deployed a machine learning algorithm using deep neural networks
+                    and transformer-based models to predict item quantities sold for millions of
+                    products. Created optimization methods to maximize revenue and profit under
+                    budget constraints, integrating advanced optimization techniques and parallel
+                    processing. Improved prediction accuracy by 10% based on MAPE and MAE,
+                    enhancing the effectiveness of sales forecasts, reduced manual processing
+                    time by 80% through full automation. Increased annual revenue by 6%
+                    ($150 million) and profit by 4% ($10 million) through optimized discount
+                    allocations, as demonstrated by A/B testing. Wrote production code and
+                    deployed models using Docker, Jenkins, and Airflow on local servers and Google
+                    Cloud Platform (GCP). Participated in A/B testing for new algorithms, including
+                    test design, method development, sample splitting, metric selection, power
+                    calculation, and results analysis.
+                </li>
+                <li>
+                    <b>Customer Lifetime Value (CLV) Estimation</b>
+                    <br>
+                    Developed and implemented CLV estimation model combining churn probability
+                    prediction with future spend forecasting using gradient boosting, improving
+                    accuracy isotonic regression. Enabled the business to optimize marketing
+                    strategies by identifying high-value customers, resulting in more precise
+                    marketing budget allocations, increased retention, and sales.
+                </li>
+                <li>
+                    <b>Probabilistic SKU Selection</b>
+                    <br>
+                    Developed a probabilistic model for SKU selection that optimized pricing and
+                    discounts by integrating business requirements, improving transparency and
+                    flexibility, and reducing processing costs by 20%.
+                </li>
+                <li>
+                    <b>Product Deduplication Detection</b>
+                    <br>
+                    Implemented a deduplication model analyzing over 3 million SKUs using
+                    image hashing, decreasing duplicate listings by 95% and improving
+                    operational efficiency by 30%.
+                </li>
             </ul>
         </section>
+        <!--projects-->
         <section id="projects" class="section">
             <h2>Projects</h2>
+            <b>Multimodal Retrieval-Augmented Generation System:</b> 2024
             <ul>
-                <li><strong>Project Name</strong>: Brief description of the project and what it entailed.</li>
-                <li><strong>Another Project</strong>: Brief description of the project and what it entailed.</li>
-                <li><strong>Yet Another Project</strong>: Brief description of the project and what it entailed.</li>
+                <li>
+                    Designed and developed a system integrating text and video data using multimodal
+                    embeddings from Large Language Models (LLMs) like BERT and GPT, and Large
+                    Vision-Language Models (LVLMs) such as CLIP.
+                </li>
+                <li>
+                    Collected and preprocessed a dataset of synchronized text and video content,
+                    implementing automated video preprocessing pipelines using OpenCV and FFmpeg,
+                    which reduced preprocessing time by 40%.
+                </li>
+                <li>
+                    Extracted and aligned text and video embeddings into a shared vector space,
+                    enabling cross-modal retrieval with enhanced accuracy.
+                </li>
+                <li>
+                    Implemented an efficient retrieval system using vector databases like Faiss,
+                    improving retrieval accuracy from vector stores by 30%.
+                </li>
+                <li>Deployed the system using Docker, created RESTful APIs for interaction,
+                    and ensured scalability and performance through optimization and
+                    parallel processing techniques.
+                </li>
             </ul>
         </section>
+        <!--skills-->
         <section id="skills" class="section">
             <h2>Skills</h2>
             <ul>
@@ -121,44 +242,98 @@
                 <li><strong>Languages</strong>: English, Kazakh (Native), Russian, Turkish, Turkmen</li>
             </ul>
         </section>
+        <!--education-->
         <section id="education" class="section">
             <h2>Education</h2>
-            <p><strong>University of Utah:</strong> (Year - Year)</p>
-            <p>PhD in Mathematics: GPA: 4.0</p>
-            <p>Thesis: "Title of Your Thesis"</p>
-            <p>Explanation: Brief explanation of your thesis topic and research.</p>
-            <p><strong>University of Utah:</strong> (Year - Year)</p>
-            <p>MSc in Statistics: GPA: 4.0</p>
-            <p>Thesis: "Title of Your Thesis"</p>
-            <p>Explanation: Brief explanation of your thesis topic and research.</p>
-            <p><strong>Boğaziçi University:</strong> (Year - Year)</p>
-            <p>MSc in Mathematics: GPA: 4.0</p>
-            <p>Thesis: "Title of Your Thesis"</p>
-            <p>Explanation: Brief explanation of your thesis topic and research.</p>
-            <p><strong>Boğaziçi University:</strong> (Year - Year)</p>
-            <p>BSc in Mathematics: GPA: 4.0</p>
-            <p>Thesis: "Title of Your Thesis"</p>
-            <p>Explanation: Brief explanation of your thesis topic and research.</p>
-        </section>
-        <section id="miscellaneous" class="section">
-            <h2>Miscellaneous</h2>
+            <p><strong>University of Utah:</strong> (year - year)</p>
             <ul>
-                <li>Generalized Linear Model project: 
-                    <a href="/files/Normal%20GLM.pdf">Problem,</a> 
-                    <a href="https://www.math.utah.edu/~sergazy/statistics/Generalized%20Linear%20Model/Normal_GLM_Project.R">R file,</a> 
-                    <a href="https://www.math.utah.edu/~sergazy/statistics/Generalized%20Linear%20Model/Normal_GLM_Project.html">Analysis output</a>
+                <li>
+                    PhD in Mathematics:
+                    <br>GPA: 4.0
+                    <br>Thesis: "Title of Your Thesis"
+                    <br>Explanation: Brief explanation of your thesis topic and research.
+                </li>
+                <li>
+                    MSc in Statistics:
+                    <br>GPA: 4.0
+                    <br>Thesis: "Title of Your Thesis"
+                    <br>Explanation: Brief explanation of your thesis topic and research
+                </li>
+            </ul>
+            <p><strong>Boğaziçi University:</strong> (year - year) </p>
+            <ul>
+                <li>
+                    MSc in Mathematics:
+                    <br>GPA: 4.0
+                    <br>Thesis: "Title of Your Thesis"
+                    <br>Explanation: Brief explanation of your thesis topic and research
+                </li>
+                <li>
+                    BSc in Mathematics:
+                    <br>GPA: 4.0
+                    <br>Thesis: "Title of Your Thesis"
+                    <br>Explanation: Brief explanation of your thesis topic and research.
                 </li>
             </ul>
         </section>
+        <!--miscellaneous-->
+        <section id="miscellaneous" class="section">
+            <h2>Miscellaneous (linklerde locale alın(a)madı)</h2>
+            <ul>
+                <li>
+                    Generalized Linear Model project:
+                    <a href="/files/Normal%20GLM.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Generalized%20Linear%20Model/Normal_GLM_Project.R">R file,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Generalized%20Linear%20Model/Normal_GLM_Project.html">Analysis output</a>
+                </li>
+                <li>
+                    Time Series Analysis project:
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Time%20Series%20Analysis/Time%20series.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Time%20Series%20Analysis/Assignment3last.R">R file,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Time%20Series%20Analysis/Assignment3last.pdf">Analysis output</a>
+                </li>
+                <li>
+                    Forward and Backward Stepwise using p-values:
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Forward%20and%20Backward%20Stepwise%20using%20p-values/Prestige_Data_Assignment.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Forward%20and%20Backward%20Stepwise%20using%20p-values/Prestige_data_assignment.pdf">Analysis output</a>
+                </li>
+                <li>
+                    Modelling income per state project:
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Modeling%20Income%20per%20State/Modelling_income_per_state.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Modeling%20Income%20per%20State/Modelling_income_per_state.R">R file,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Modeling%20Income%20per%20State/Modelling_income_per_state.html">Analysis output</a>
+                </li>
+                <li>
+                    Alternative to least squares project:
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Alternative%20to%20least%20squares/Alternatives.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Alternative%20to%20least%20squares/Alternative%20to%20Least%20Squares.R">R file,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Alternative%20to%20least%20squares/Alternative%20to%20Least%20Squares.html">Analysis output</a></li>
+                <li>
+                    Fetal Curve Study (Quantile regression):
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Fetal%20Curve%20Study%20Analysis/Fetal_Curve_Study_Analysis_Report.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/Fetal%20Curve%20Study%20Analysis/Fistula_report.rmd">R file,</a>
+                </li>
+                <li>
+                    Beta regression and Survival Analysis:
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/NNNS/NNNS-Analysis-Report1.pdf">Problem,</a>
+                    <a href="https://www.math.utah.edu/~sergazy/statistics/NNNS/NNNS.Rmd">R file,</a>
+                <li>
+                    Special Project for Masters degree in Statistics:
+                    <a href="https://www.math.utah.edu/~sergazy/MStatProject-9.html">Analysis</a>
+                </li>
+            </ul>
+        </section>
+        <!--contact-->
         <section id="contact" class="section">
             <h2>Contact</h2>
-            <p><a href="mailto:sergazy.nurbavliyev@gmail.com">sergazy.nurbavliyev@gmail.com</a></p>
-            <p><a href="https://github.com/sernur">github.com/sernur</a></p>
-            <p><a href="https://linkedin.com/in/sergazy">linkedin.com/in/sergazy</a></p>
+            <p>Mail: <a href="mailto:sergazy.nurbavliyev@gmail.com">sergazy.nurbavliyev@gmail.com</a></p>
+            <p>Github: <a href="https://github.com/sernur">github.com/sernur</a></p>
+            <p>Linkedin: <a href="https://linkedin.com/in/sergazy">linkedin.com/in/sergazy</a></p>
             <p>Phone: (385)-389-7833</p>
             <p>Salt Lake City, Utah</p>
         </section>
     </div>
+    <!--footnote-->
     <footer>
         <p>John Doe &copy; 2024</p>
     </footer>
