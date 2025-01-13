@@ -1,0 +1,353 @@
+---
+title: 'Fistula Study Analysis Report'
+author: 
+- "Principal Investigator:  Tom Greene"
+- "Statistician: Sergazy"
+date: "`r Sys.Date()`"
+output:
+  word_document:
+    reference_docx: Report_Template1.docx
+    toc: TRUE
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,warning=F)
+```
+  
+  
+```{r, include=FALSE}
+# install.packages("ISLR")
+library(ISLR)
+library(knitr)
+#Start Here for October 1 Class
+library(Hmisc)  #Frank Harrell's package
+library(psych)  #usefull data summarization functions 
+library(MASS)   #tools for modern applied statistics
+library(sandwich) #supports robust statistical inference 
+library(jtools)  #nice output formats for multiple regression
+library(car)    #nice regression features
+library(GGally) #useful extensions to ggplot2
+library(tidyverse) #the tidyverse from class, including dplyr, tidyr, readr, and ggplot2   
+library(sandwich) # for statistical inference that is robust to assumption of homoskedasticity
+library(lmtest)  
+library(sas7bdat)
+library(aod)
+library(foreign)
+source("functions_2019_clean.R")
+```  
+  
+  
+# Log   
+
+* This is the first version of analysis report sent to PI:
+    - Dataset used is "usdat.sas7bdat";
+    - SAP used to generate report is "Fistula Study Analysis SAP.docx";
+    - Time used for this project until now is 5 hours.
+  
+# Log   
+
+* This is the second version of analysis report sent to PI:
+    - Dataset used is the same,
+    - SAP used to generate report is "Final Study Analysis SAP updated.docx";
+    - Time used for this project until now is 10 hours.
+  
+# Abstract  
+
+Please report the key findings here.
+
+  
+# Data
+
+```{r}
+Fistula<-read.sas7bdat("usdat.sas7bdat")
+
+head(Fistula)
+summary(Fistula)
+#Fistula<-mutate(Fistula,center=as.factor(cc_n))
+
+total.N <-nrow(Fistula)
+##Get plot of pre-operative flow mediated dilation vrs week 6 fistula flow rate.
+plot(Fistula$flow3~Fistula$fmd_perc)
+##Get Gamma regression model for pre-operative flow mediated dilation and week 6 fistula flow rate and p-value.
+
+flow<-glm(data=Fistula,flow3~fmd_perc,family=Gamma(link="log"))
+summary(flow)
+
+
+```
+p-value is 0.074 indicating there is no statistical association between between pre-operative flow mediated dilation and week 6 fistula flow rate.
+
+
+* 
+    - Version of data: Auto data from ISLR package is used, and there are `r total.N` total observations included;
+    - Exclude models in year 70, and exclude models with weight less than 1700 lbs;
+    - Variable definitions: Outcome is "mpg" (miles per gallon), other variables used for analysis are `r colnames(Auto)[2:8]`, and "acceleration" is redefined as $\frac{acceleration+10}{2}$;
+    - Cohort construction: 
+  
+  
+```{r}
+### create table 
+tab.cohort <- data.frame(Criteria = c("Total included","exclude models in year 70","exclude models with weight lower than 1700"),
+                         Size = c(total.N,13,13))
+
+### print table 
+kable(tab.cohort,caption = "Cohort Construction",row.names = F)
+```
+   
+   
+# Statistical Methods  
+
+Please write your statistical methods used for the study here. 
+  
+  
+# Research Objectives 
+
+To determine whether there is association between mgh for cars and other features of cars including `r colnames(Auto)[2:8]`. 
+  
+
+
+# Result  
+
+## Tables
+
+```{r}
+### descriptive table
+#type <- rep(1,7)
+#tab.des <- myNOgrtab(F[2:8],dnames=colnames(Auto)[2:8],type,annot=T, allSums=T, onelineBinary=F, showbinarylevel=T, footMissing=T, output=NULL, hist = F)
+#names(Fistula2)
+tp=c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) # type of varyiables : 0 - continuos, 1- continuous & non parametric, 2- categorical
+cbind(names(Fistula), tp)
+dnamesx = names(Fistula)
+## separate columns & missing as column
+tab.des <- myNOgrtab(xdat=Fistula,typev=tp, dnames=dnamesx, allSums=T, onelinebinary=T, showbinarylevel=F, compact=FALSE, output="Table23.doc", footMissing=F)# type of varyiables : 0 - continuos, 1- continuous & non parametric, 2- categorical
+#tab.des <- tab.des[[1]]
+#tab.des$`levels/Statistics` <- gsub(".*-", "", tab.des[,1])
+#tab.des[,1] <- gsub( "-.*$", "", tab.des[,1])
+#colnames(tab.des)[1] <- paste("Variable",colnames(tab.des)[1])
+#tab.des <- tab.des[,c(1,3,2)]
+
+
+### print table into word table format
+kable(tab.des,caption = "Table 1. Descriptive Table",row.names = T)
+
+```
+
+  
+  
+```{r}
+##### regression analysis
+
+#### full model:
+
+flow2<-glm(data=Fistula,flow3~female+race_black+age_at_surg+diabetes+cad+pad+hist_cvd+chf+alb+dial_surg+bmi+pre_art_diam+pre_vein_diam_min+fmd_perc,family=Gamma(link="log"))
+summary(flow2)
+
+flow3<-glm(data=Fistula,flow3~female+race_black+age_at_surg+diabetes+cad+pad+hist_cvd+chf+alb+dial_surg+bmi+pre_art_diam+pre_vein_diam_min+v_diam1+fmd_perc,family=Gamma(link="log"))
+summary(flow3)
+
+
+summary(flow)
+#data <- Auto[,which(colnames(Auto)!="name"),]
+#fit1 <- lm(mpg~., data = data)
+# summary(fit1)
+# confint(fit1)
+names(Fistula)
+tab.mod1 <- data.frame(Variable = rownames(summary(flow)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow)$coefficients[,4] < 0.001,"<0.001",round(summary(flow)$coefficients[,4] ,3)))
+     
+                                                  
+#### reduced model:
+
+#fit2 <- lm(mpg~cylinders+displacement+horsepower+weight+year+origin, data = data)
+# summary(fit2)
+# confint(fit2)
+tab.mod2 <- data.frame(Variable = rownames(summary(flow2)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow2)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow2)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow2)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow2)$coefficients[,4] < 0.001,"<0.001",round(summary(flow2)$coefficients[,4] ,3)))
+
+
+tab.mod3 <- data.frame(Variable = rownames(summary(flow3)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow3)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow3)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow3)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow3)$coefficients[,4] < 0.001,"<0.001",round(summary(flow3)$coefficients[,4] ,3)))
+#### combine two result tables together
+tab.result <- merge(tab.mod1,tab.mod2,by="Variable",all.y = T)
+colnames(tab.result) <- c("Variable","M1 - Coefficients (95% CI)","M1 - p","M2 - Coefficients (95% CI)","M2 - p")
+
+
+tab.result1 <- merge(tab.result,tab.mod3,by="Variable",all.y = T)
+colnames(tab.result1) <- c("Variable","M1 - Coefficients (95% CI)","M1 - p","M2 - Coefficients (95% CI)","M2 - p","M3 - Coefficients (95% CI)","M3 - p")
+### print table into word table format
+kable(tab.result1, caption="Table 2. Regression Result", row.names = F)
+
+```
+
+
+```{r}
+flow2sqrt<-lm(data=Fistula,sqrt(flow3)~female+race_black+age_at_surg+diabetes+cad+pad+hist_cvd+chf+alb+dial_surg+bmi+pre_art_diam+pre_vein_diam_min+fmd_perc)
+summary(flow2sqrt)
+
+flow2log<-lm(data=Fistula,log(flow3)~female+race_black+age_at_surg+diabetes+cad+pad+hist_cvd+chf+alb+dial_surg+bmi+pre_art_diam+pre_vein_diam_min+fmd_perc)
+summary(flow2log)
+
+
+names(Fistula)
+tab.modSq1 <- data.frame(Variable = rownames(summary(flow2sqrt)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow2sqrt)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow2sqrt)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow2sqrt)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow2sqrt)$coefficients[,4] < 0.001,"<0.001",round(summary(flow2sqrt)$coefficients[,4] ,3)))
+     
+                                                  
+#### reduced model:
+
+#fit2 <- lm(mpg~cylinders+displacement+horsepower+weight+year+origin, data = data)
+# summary(fit2)
+# confint(fit2)
+tab.modSq2 <- data.frame(Variable = rownames(summary(flow2log)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow2log)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow2log)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow2log)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow2log)$coefficients[,4] < 0.001,"<0.001",round(summary(flow2log)$coefficients[,4] ,3)))
+
+
+#tab.mod3 <- data.frame(Variable = rownames(summary(flow3)$coefficients),
+                      # `coefficients(95% CI)` = #paste0(round(summary(flow3)$coefficients[,1],2),
+ #                                                      " (",
+  #                                                     round(confint(flow3)[,1],2),
+   #                                                    ", ",
+    #                                                   round(confint(flow3)[,2],2),
+     #                                                  ")"),
+      #                 p = ifelse(summary(flow3)$coefficients[,4] < 0.001,"<0.001",round(summary(flow3)$coefficients[,4] ,3)))
+#### combine two result tables together
+tab.resultSq1 <- merge(tab.modSq1,tab.modSq2,by="Variable",all.y = T)
+colnames(tab.resultSq1) <- c("Variable","M1 - Coefficients (95% CI)","M1 - p","M2 - Coefficients (95% CI)","M2 - p")
+
+
+#tab.result1 <- merge(tab.result,tab.mod3,by="Variable",all.y = T)
+#colnames(tab.resultSq1) <- c("Variable","M1 - Coefficients (95% CI)","M1 - p","M2 - Coefficients (95% CI)","M2 - p","M3 - Coefficients (95% CI)","M3 - p")
+### print table into word table format
+kable(tab.resultSq1, caption="Table 2b. (Transformed) Regression Result", row.names = F)
+```
+
+
+```{r}
+flow3sqrt<-lm(data=Fistula,sqrt(flow3)~female+race_black+age_at_surg+diabetes+cad+pad+hist_cvd+chf+alb+dial_surg+bmi+pre_art_diam+pre_vein_diam_min+v_diam1+fmd_perc)
+summary(flow3sqrt)
+
+flow3log<-lm(data=Fistula,log(flow3)~female+race_black+age_at_surg+diabetes+cad+pad+hist_cvd+chf+alb+dial_surg+bmi+pre_art_diam+pre_vein_diam_min+v_diam1+fmd_perc)
+summary(flow3log)
+
+names(Fistula)
+tab.modSq3 <- data.frame(Variable = rownames(summary(flow3sqrt)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow3sqrt)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow3sqrt)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow3sqrt)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow3sqrt)$coefficients[,4] < 0.001,"<0.001",round(summary(flow3sqrt)$coefficients[,4] ,3)))
+     
+                                                  
+#### reduced model:
+
+#fit2 <- lm(mpg~cylinders+displacement+horsepower+weight+year+origin, data = data)
+# summary(fit2)
+# confint(fit2)
+tab.modSq4 <- data.frame(Variable = rownames(summary(flow3log)$coefficients),
+                       `coefficients(95% CI)` = paste0(round(summary(flow3log)$coefficients[,1],2),
+                                                       " (",
+                                                       round(confint(flow3log)[,1],2),
+                                                       ", ",
+                                                       round(confint(flow3log)[,2],2),
+                                                       ")"),
+                       p = ifelse(summary(flow3log)$coefficients[,4] < 0.001,"<0.001",round(summary(flow3log)$coefficients[,4] ,3)))
+
+
+#tab.mod3 <- data.frame(Variable = rownames(summary(flow3)$coefficients),
+                       #`coefficients(95% CI)` = #paste0(round(summary(flow3)$coefficients[,1],2),
+ #                                                      " (",
+  #                                                     round(confint(flow3)[,1],2),
+   #                                                    ", ",
+    #                                                   round(confint(flow3)[,2],2),
+     #                                                  ")"),
+      #                 p = ifelse(summary(flow3)$coefficients[,4] < 0.001,"<0.001",round(summary(flow3)$coefficients[,4] ,3)))
+#### combine two result tables together
+tab.resultSq2 <- merge(tab.modSq3,tab.modSq3,by="Variable",all.y = T)
+colnames(tab.resultSq2) <- c("Variable","M1 - Coefficients (95% CI)","M1 - p","M2 - Coefficients (95% CI)","M2 - p")
+
+
+#tab.result1 <- merge(tab.result,tab.mod3,by="Variable",all.y = T)
+#colnames(tab.resultSq1) <- c("Variable","M1 - Coefficients (95% CI)","M1 - p","M2 - Coefficients (95% CI)","M2 - p","M3 - Coefficients (95% CI)","M3 - p")
+### print table into word table format
+kable(tab.resultSq2, caption="Table 2c. (Transformed) Regression Result", row.names = F)
+```
+
+
+## Figures
+
+```{r, fig.height = 3, fig.width = 4}
+  
+plot(Fistula$fmd_perc,Fistula$flow3, col="navy", main=" Scatterplot",xlab = "Pre-Operative flow mediated dilation",ylab = "Week 6 Fistula flow Rate")
+#par(mar=c(1,1,1,1))
+
+```
+
+## Text 
+
+Results from the final model (with `r colnames(Auto)[2:8]` as covariates) show that keep other covariates constant, with one unit increase in horsepower, there is an expected `r tab.result[5,2]` change in mile per gallon (p = `r tab.result[5,3]`). (Just give one result as example here.)
+
+
+# Discussion
+
+Please put the discussion section here.
+
+
+# Reference
+
+if needed
+
+
+# Additional Information for Project PI
+
+## Guidelines for Authorship
+
+In general, authorship is merited and expected for PHR/SDBC statisticians and collaborators. Exceptions may be made if the number of authors is limited by the journal, but please discuss with the PHR/SDBD collaborators.  The criteria for authorship by the International Committee of Medical Journal Editors can be found online at: https://medicine.utah.edu/ccts/sdbc/publish.php. 
+
+PHR/SDBC Policy requires manuscripts, posters and abstracts be made available to PHR/SDBC statisticians and collaborators with reasonable time (1 week+ for papers) prior to submission. 
+
+## Acknowledging CCTS funding
+
+Please remember to acknowledge the SDBC: "This investigation was supported by the University of Utah Study Design and Biostatistics Center, with funding in part from the National Center for Research Resources and the National Center for Advancing Translational Sciences, National Institutes of Health, through Grant UL1TR002538.".
+
+
+
+
+
+
+
+
+
+

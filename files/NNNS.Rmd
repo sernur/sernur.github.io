@@ -1,0 +1,142 @@
+---
+title: "Untitled"
+author: "Linda Appiagyei Amoafo"
+date: "11/21/2019"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(mice)
+library(VIM)
+library(survival)
+library(lubridate)
+library(gamlss)
+library(NNMIS)
+library(ggplot2)
+library(ggfortify)
+library(rtf)
+source("functions_2019_clean.r")
+```
+
+
+```{r}
+NNNSDATA<-read.csv("NNNS_score_data.csv")
+dim(NNNSDATA)
+
+NNNSDATA<-dplyr::select(NNNSDATA,-c(Pre.Op.NNNS.habituation.score,Post.Op.NNNS.habituation.score))%>%filter(Date.PO.feeds.started !="")%>%filter(Date.Reaching.Full.PO !="" | Date.Identified.as.not.yet.full.PO!="" )
+
+
+NNNSDATA$Date.PO.feeds.started<-mdy(NNNSDATA$Date.PO.feeds.started)
+NNNSDATA$Date.Reaching.Full.PO<-mdy(NNNSDATA$Date.Reaching.Full.PO)
+NNNSDATA$Date.Identified.as.not.yet.full.PO<-mdy(NNNSDATA$Date.Identified.as.not.yet.full.PO)
+
+
+
+NNNSDATA$Time<-ifelse(is.na(NNNSDATA$Date.Identified.as.not.yet.full.PO),NNNSDATA$Date.Reaching.Full.PO-NNNSDATA$Date.PO.feeds.started,NNNSDATA$Date.Identified.as.not.yet.full.PO-NNNSDATA$Date.PO.feeds.started)
+NNNSDATA$Censor<-ifelse(is.na(NNNSDATA$Date.Reaching.Full.PO),1,0)
+NNNSDATA<-mutate(NNNSDATA,Inter=Time*Censor)
+
+NNNSDATA$sex..1.M..2.F.<-as.factor(ifelse(NNNSDATA$sex..1.M..2.F.==2,"1","0"))
+
+
+NNNSDATA<-dplyr::select(NNNSDATA,-c(Date.PO.feeds.started,Date.Reaching.Full.PO,Date.Identified.as.not.yet.full.PO))
+
+
+View(NNNSDATA)
+class(NNNSDATA)
+Imputed.data<-mice(NNNSDATA, m=20, maxit = 20, seed = 500)
+DATA<-mice::complete(Imputed.data,1)
+
+```
+
+
+**BETA REGRESSION**
+
+What do we do about 0's and 1's? 
+
+Does this transform work? How would it work with mice?
+
+
+```{r}
+betaresults <- with(Imputed.data, gamlss(ifelse(Percent.of.feeds.taken.by.mouth.at.discharge == 0, 0, Percent.of.feeds.taken.by.mouth.at.discharge*(118 - 1) + .5)/118 ~ sex..1.M..2.F.+Genetic.Syndrome.or.Chromosomal.Abnormality+Age.at.Surgery..days.+Premature+Cardiac.Anatomy+Length.of.intubation..days.+Extubation.failure+GI.Complication+Pre.Op.NNNS.attention.score+Post.Op.NNNS.attention.score, family = BEINF0)
+)
+
+betaresults
+summary(pool(betaresults)) # Pools results across imputed data sets and adjusts SEs
+print(pool(betaresults))
+
+((qnorm(1-0.05/2)+qnorm(1-0.8))^2)/((0.5*0.5)*(1.5/0.9)^2)
+```
+
+
+**Cox REGRESSION**
+
+What do we do about 0's and 1's? 
+
+Does this transform work? How would it work with mice?
+
+
+```{r}
+Coxresults <- with(Imputed.data,coxph(Surv(Time,Censor)~ sex..1.M..2.F.+Genetic.Syndrome.or.Chromosomal.Abnormality+Age.at.Surgery..days.+Premature+Cardiac.Anatomy+Length.of.intubation..days.+Extubation.failure+GI.Complication+Pre.Op.NNNS.attention.score+Post.Op.NNNS.attention.score)
+)
+
+betaresults
+summary(pool(Coxresults)) # Pools results across imputed data sets and adjusts SEs
+print(pool(Coxresults))
+
+```
+
+```{r}
+
+#sex..1.M..2.F.+Genetic.Syndrome.or.Chromosomal.Abnormality+Age.at.Surgery..days.+Premature+Cardiac.Anatomy+Length.of.intubation..days.+Extubation.failure+GI.Complication+Pre.Op.NNNS.attention.score+Post.Op.NNNS.attention.score
+s1 = c('sex..1.M..2.F.','Genetic.Syndrome.or.Chromosomal.Abnormality','Age.at.Surgery..days.','Premature','Cardiac.Anatomy','Length.of.intubation..days.','Extubation.failure','GI.Complication','Pre.Op.NNNS.attention.score','Post.Op.NNNS.attention.score')
+a<-dplyr::select(NNNSDATA,s1)
+names = c('Sex','Genetic Syndrome or Chromosomal Abnormality','Age(Surgery days)','Premature','Cardiac Anatomy','Length of intubation days','Extubation failure', 'GI Complication','Pre Operation NNNS attention score','Post Operation NNS attention score')
+tp=c(2,2,0,2,2,0,2,2,0,0) # type of varyiables : 0 - continuos, 1- continuous & non parametric, 2- categorical
+cbind(names, tp)
+dnamesx = names
+#names(dataset)
+tab.des=myNOgrtab(xdat=a,typev=tp, dnames=dnamesx, allSums=T, onelinebinary=T, showbinarylevel=T, compact=FALSE, output="Table213.doc", footMissing=T)
+
+kable(tab.des,caption = "Table 1. Descriptive Table",row.names = F)
+```
+
+
+```{r}
+tab.cohort <- data.frame(Criteria = c("Total number of observations",
+                                      "Excluded number of samples that do not have starting date",
+                                      "Excluded number of samples that do not have either ending date or not identified date",
+                                      'Date.PO.feeds.started variable sorted as month date year',
+                                      'Date.Reaching.Full.PO variable sorted as month date year',
+                                      'Date.Identified.as.not.yet.full.PO variable sorted as month date year',
+                                      'Time variable is created',
+                                      'Censor variable is created',
+                                      'Inter variable is created using Time and Censor'),
+                         Size = c(129,8 ,4,118,118,118,118,118,118))
+
+### print table 
+kable(tab.cohort,caption = "Cohort Construction",row.names = F)
+```
+```{r}
+#newdata3 = dplyr::select(a,-'Extubation.failure')
+#corr_matrix = cor(newdata3,use = "complete.obs")
+#colnames(corr_matrix)=c('Sex','Genetic Synd.','Age(days)','Premature','Cardiac Anat.','Intub. days', 'GI Compl.','Pre Op. score','Post Op. score')
+#rownames(corr_matrix)=c('Sex','Genetic Synd.','Age(days)','Premature','Cardiac Anat.','Intub. days', 'GI Compl.','Pre Op. score','Post Op. score')
+Pre<-dplyr::select(NNNSDATA,starts_with("Pre"))[-1]
+Post<-dplyr::select(NNNSDATA,starts_with("Post"))
+Pre_corr_matrix = cor(Pre,use = "complete.obs")
+Post_corr_matrix = cor(Post,use = "complete.obs")
+colnames(Pre_corr_matrix)=c('Habituation','Attention','Handling','Qual. Mov.','Regulation', 'Non Opt. Refl.','Stress ','Arousal','Hypertonic','Hypotonic','Asymmetry','Excitability','Lethargy')
+rownames(Pre_corr_matrix)=c('Habituation','Attention','Handling','Qual. Mov.','Regulation', 'Non Opt. Refl.','Stress ','Arousal','Hypertonic','Hypotonic','Asymmetry','Excitability','Lethargy')
+colnames(Post_corr_matrix)=c('Habituation','Attention','Handling','Qual. Mov.','Regulation', 'Non Opt. Refl.','Stress ','Arousal','Hypertonic','Hypotonic','Asymmetry','Excitability','Lethargy')
+rownames(Post_corr_matrix)=c('Habituation','Attention','Handling','Qual. Mov.','Regulation', 'Non Opt. Refl.','Stress ','Arousal','Hypertonic','Hypotonic','Asymmetry','Excitability','Lethargy')
+kable(Pre_corr_matrix, caption="Table 3a. Correlation matrix of the pre attention score variables", row.names = T) #rtf didnt work
+kable(Post_corr_matrix, caption="Table 3b. Correlation matrix of the pre attention score variables", row.names = T)
+
+rtffile<-RTF("rtf.doc")
+addTable(rtffile,Post_corr_matrix)
+done(rtffile)
+```
+
