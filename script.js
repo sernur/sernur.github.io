@@ -45,13 +45,17 @@ class WebsiteController {
     }
 
     saveSettings() {
-        localStorage.setItem('theme', this.currentTheme);
+        localStorage.setItem('theme_v2', this.currentTheme);
     }
 
     loadSavedSettings() {
-        const savedTheme = localStorage.getItem('theme');
+        const savedTheme = localStorage.getItem('theme_v2');
         if (savedTheme) {
             this.currentTheme = savedTheme;
+        } else {
+            // Default to dark on first load (e.g., GitHub Pages fresh visit)
+            this.currentTheme = 'dark';
+            localStorage.setItem('theme_v2', 'dark');
         }
     }
 }
@@ -59,23 +63,31 @@ class WebsiteController {
 
 // Initialize website controller
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure dark is the initial class if no explicit 'theme_v2' = 'light'
+    try {
+        var saved = localStorage.getItem('theme_v2');
+        if (saved !== 'light') {
+            document.body.classList.remove('light-theme');
+        }
+    } catch (e) {}
+
     new WebsiteController();
 });
 
 // Smooth scrolling for navigation links
 document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('nav a[href^="#"]');
-    
+
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             const targetId = this.getAttribute('href').substring(1);
             const targetElement = document.getElementById(targetId);
-            
+
             if (targetElement) {
                 const offsetTop = targetElement.offsetTop - 80;
-                
+
                 window.scrollTo({
                     top: offsetTop,
                     behavior: 'smooth'
@@ -111,15 +123,5 @@ window.addEventListener('scroll', () => {
         // fall back to CSS default variables for top-of-page look
         nav.style.background = 'var(--sidebar-bg)';
         nav.style.backdropFilter = 'blur(25px) saturate(180%)';
-    }
-});
-
-
-if (window.scrollY > 100) {
-        nav.style.background = 'rgba(75, 85, 135, 0.95)';
-        nav.style.backdropFilter = 'blur(20px)';
-    } else {
-        nav.style.background = 'rgba(75, 85, 135, 0.9)';
-        nav.style.backdropFilter = 'blur(15px)';
     }
 });
