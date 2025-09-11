@@ -85,10 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Navigation bar scroll effect
-window.addEventListener('scroll', function() {
-    const nav = document.querySelector('nav');
-    if (window.scrollY > 50) {
+if (window.scrollY > 50) {
         nav.style.background = 'rgba(26, 26, 46, 0.95)';
         nav.style.backdropFilter = 'blur(10px)';
     } else {
@@ -99,10 +96,26 @@ window.addEventListener('scroll', function() {
 
 // Language-related functions removed - website now uses English only
 
-// Add scroll effect for navigation
-window.addEventListener('scroll', function () {
+// Unified nav scroll effect (merged duplicates)
+window.addEventListener('scroll', () => {
     const nav = document.querySelector('nav');
-    if (window.scrollY > 100) {
+    if (!nav) return;
+    const y = window.scrollY;
+    if (y > 100) {
+        nav.style.background = 'rgba(75, 85, 135, 0.95)';
+        nav.style.backdropFilter = 'blur(20px)';
+    } else if (y > 50) {
+        nav.style.background = 'rgba(26, 26, 46, 0.95)';
+        nav.style.backdropFilter = 'blur(10px)';
+    } else {
+        // fall back to CSS default variables for top-of-page look
+        nav.style.background = 'var(--sidebar-bg)';
+        nav.style.backdropFilter = 'blur(25px) saturate(180%)';
+    }
+});
+
+
+if (window.scrollY > 100) {
         nav.style.background = 'rgba(75, 85, 135, 0.95)';
         nav.style.backdropFilter = 'blur(20px)';
     } else {
